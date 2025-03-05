@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  anomalyze-api:
+    build: .
+    container_name: anomalyze
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+
+  mongodb:
+    image: mongo:5.0
+    container_name: anomalyze-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: anomalyze
+      MONGO_INITDB_ROOT_PASSWORD: secretpassword
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
