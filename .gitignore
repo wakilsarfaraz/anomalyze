@@ -1,0 +1,14 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore Virtual Environment
+venv/
+.env
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore Docker builds
+*.log
+*.db
