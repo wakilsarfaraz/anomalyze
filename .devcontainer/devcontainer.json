@@ -1,26 +1,12 @@
 {
-  "name": "Anomalyze Devcontainer",
+  "name": "Anomalyze Dev Container",
   "dockerComposeFile": "../docker-compose.yml",
-  "service": "anomalyze-api",
+  "service": "api",
   "workspaceFolder": "/workspace",
-  "build": {
-    "dockerfile": "../Dockerfile"
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
   },
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-python.python",
-        "ms-azuretools.vscode-docker",
-        "mongodb.mongodb-vscode",
-        "humao.rest-client"
-      ]
-    }
-  },
-  "remoteUser": "root",
-  "postCreateCommand": "pip install --no-cache-dir -r requirements.txt",
-  "features": {
-    "ghcr.io/devcontainers/features/python:1": {
-      "version": "3.11"
-    }
-  }
+  "extensions": [
+    "ms-python.python"
+  ]
 }
