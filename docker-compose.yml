@@ -1,27 +1,30 @@
-version: '3.8'
-
 services:
-  anomalyze-api:
+  api:
+    container_name: anomalyze-api
     build: .
-    container_name: anomalyze
     ports:
       - "8000:8000"
     depends_on:
-      - mongodb
-    env_file:
-      - .env
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/anomalyze
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
 
   mongodb:
-    image: mongo:5.0
     container_name: anomalyze-mongo
-    restart: always
+    image: mongo:5.0
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: anomalyze
-      MONGO_INITDB_ROOT_PASSWORD: secretpassword
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
 volumes:
   mongo_data:

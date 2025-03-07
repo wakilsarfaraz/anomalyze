@@ -1,18 +1,21 @@
-# Use official Python image
-FROM python:3.10
+# Use Python 3.11 with preconfigured data science tools
+FROM mcr.microsoft.com/devcontainers/python:3.11-bullseye
 
-# Set working directory inside container
-WORKDIR /app
+# Set working directory
+WORKDIR /workspace
 
-# Copy project files
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Ensure MongoDB data directory exists
+RUN mkdir -p /var/lib/mongodb
 
-COPY src/ ./src/
-
-# Expose FastAPI port
+# Expose necessary ports
 EXPOSE 8000
 
-# Run FastAPI
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Copy and install Python dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the project files into the container
+COPY . /workspace
+
+# Start FastAPI using Uvicorn
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
