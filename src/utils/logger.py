@@ -1,19 +1,19 @@
 import logging
+from pathlib import Path
 import os
 
-# Define log file path
-LOG_FILE = "/workspace/anomalyze.log"  # Ensure it's in the correct directory
+log_file_path = Path(os.getenv("LOG_FILE_PATH", "anomalyze.log"))
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE),  # Logs to a file
-        logging.StreamHandler()  # Logs to console
-    ]
-)
+# Ensure the parent directory exists
+log_file_path.parent.mkdir(parents=True, exist_ok=True)
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("anomalyze")
+logger.setLevel(logging.INFO)
 
+if not logger.handlers:
+    logger.addHandler(logging.FileHandler(log_file_path))
+    logger.addHandler(logging.StreamHandler())
 
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+for handler in logger.handlers:
+    handler.setFormatter(formatter)
