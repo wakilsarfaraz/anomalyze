@@ -9,10 +9,15 @@ print("⚡ DEBUG: routes.py is executing")
 # ✅ Explicitly define `router` at the start
 router = APIRouter()
 
-# ✅ MongoDB Connection
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongodb:27017/")
+TEST_MODE = os.getenv("TEST_MODE", "false").lower() == "true"
+
+if TEST_MODE:
+    MONGO_URI = os.getenv("TEST_MONGO_URI", "mongodb://mongodb-test:27018/anomalyze_test")
+else:
+    MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongodb:27017/anomalyze")
+
 client = MongoClient(MONGO_URI)
-db = client["anomalyze"]
+db = client["anomalyze_test" if TEST_MODE else "anomalyze"]
 collection = db["ingestion_data"]
 
 # ✅ Define Data Model BEFORE Using It
