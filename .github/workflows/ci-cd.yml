@@ -16,7 +16,7 @@ jobs:
       mongodb-test:
         image: mongo:5.0
         ports:
-          - 27018:27017
+          - 27018:27018
 
     steps:
       - name: Checkout Code

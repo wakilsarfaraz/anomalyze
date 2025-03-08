@@ -25,7 +25,7 @@ services:
     container_name: anomalyze-mongodb-test
     image: mongo:5.0
     ports:
-      - "27018:27017"  # Test database runs on a different port
+      - "27018:27018"  # Test database runs on a different port
     volumes:
       - mongo_test_data:/data/db
 

@@ -4,8 +4,17 @@ from src.main import app
 from fastapi.testclient import TestClient
 import os
 
-# Set test database URL
-TEST_MONGO_URI = os.getenv("TEST_MONGO_URI", "mongodb://mongodb-test:27018/anomalyze_test")
+# Determine which MongoDB instance to use (test or production)
+MONGO_HOST = os.getenv("MONGO_HOST", "mongodb")
+MONGO_PORT = os.getenv("MONGO_PORT", "27017")  # Default is 27017, but will be overridden in test mode
+
+TEST_MODE = os.getenv("TEST_MODE", "false").lower() == "true"
+
+if TEST_MODE:
+    MONGO_HOST = "mongodb-test"
+    MONGO_PORT = "27018"
+
+MONGO_URI = f"mongodb://{MONGO_HOST}:{MONGO_PORT}/anomalyze"
 
 @pytest.fixture(scope="module")
 def test_client():
