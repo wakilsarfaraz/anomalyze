@@ -7,8 +7,10 @@ services:
       - "8000:8000"
     depends_on:
       - mongodb
+      - mongodb-test  # Ensure test DB is also available
     environment:
       - MONGO_URI=mongodb://mongodb:27017/anomalyze
+      - TEST_MONGO_URI=mongodb://mongodb-test:27017/anomalyze_test  # Add test DB connection
     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 
 
   mongodb:
@@ -19,5 +21,14 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  mongodb-test:
+    container_name: anomalyze-mongodb-test
+    image: mongo:5.0
+    ports:
+      - "27018:27017"  # Test database runs on a different port
+    volumes:
+      - mongo_test_data:/data/db
+
 volumes:
   mongo_data:
+  mongo_test_data:

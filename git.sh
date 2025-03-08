@@ -1,4 +1,5 @@
-git add --all
-git commit -m "Removed redundant containers and corrected container names"
-git push -u origin main
+git add .
+git commit -m "Stable integrated testing setup with isolated test database"
+git push origin main
+
 

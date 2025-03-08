@@ -5,4 +5,5 @@ motor
 python-dotenv
 pytest
 httpx
+pymongo
 
