@@ -1,5 +1,3 @@
-git add .
-git commit -m "Stable integrated testing setup with isolated test database"
+git add --all
+git commit -m "Fixed pydantic BaseSettings import issue"
 git push origin main
-
-
