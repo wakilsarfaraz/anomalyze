@@ -1,3 +1,5 @@
+
+
 services:
   api:
     container_name: anomalyze-api
@@ -8,26 +10,38 @@ services:
     depends_on:
       - mongodb
       - mongodb-test  # Ensure test DB is also available
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017/anomalyze
-      - TEST_MONGO_URI=mongodb://mongodb-test:27017/anomalyze_test  # Add test DB connection
+    env_file:
+      - .env  # Automatically load environment variables
     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 
 
   mongodb:
     container_name: anomalyze-mongodb
     image: mongo:5.0
+    restart: always
     ports:
-      - "27017:27017"
+      - "0.0.0.0:0:27017"  # Let Docker assign an available port dynamically
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: anomalyze
+      MONGO_INITDB_ROOT_PASSWORD: secretpassword
+      MONGO_INITDB_DATABASE: anomalyze
     volumes:
       - mongo_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Load initialization script
 
   mongodb-test:
     container_name: anomalyze-mongodb-test
     image: mongo:5.0
+    restart: always
     ports:
-      - "27018:27018"  # Test database runs on a different port
+      - "27018:27017"  # Map test MongoDB port to 27017 internally
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: anomalyze
+      MONGO_INITDB_ROOT_PASSWORD: secretpassword
+      MONGO_INITDB_DATABASE: anomalyze_test
     volumes:
       - mongo_test_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Ensure test DB gets the user
 
 volumes:
   mongo_data:

@@ -9,6 +9,13 @@ ENV PYTHONUNBUFFERED=1 \
 # Set working directory
 WORKDIR /workspace
 
+# Install MongoDB tools
+RUN apt update && apt install -y wget gnupg && \
+    wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | apt-key add - && \
+    echo "deb http://repo.mongodb.org/apt/debian bullseye/mongodb-org/6.0 main" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list && \
+    apt update && \
+    apt install -y mongodb-org-tools
+
 # Copy and install dependencies first (Leverages Docker caching)
 COPY requirements.txt ./
 RUN pip install --no-cache-dir --upgrade pip && \
@@ -16,6 +23,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy the entire project
 COPY . /workspace
+
+# Copy environment file explicitly (ensures it's available inside the container)
+COPY .env /workspace/.env
 
 # Expose necessary ports
 EXPOSE 8000
