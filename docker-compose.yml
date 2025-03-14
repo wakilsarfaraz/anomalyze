@@ -1,48 +1,45 @@
-
-
 services:
   api:
-    container_name: anomalyze-api
-    image: anomalyze-api
     build: .
+    container_name: anomapi
     ports:
       - "8000:8000"
     depends_on:
-      - mongodb
-      - mongodb-test  # Ensure test DB is also available
-    env_file:
-      - .env  # Automatically load environment variables
-    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 
-
-  mongodb:
-    container_name: anomalyze-mongodb
-    image: mongo:5.0
-    restart: always
-    ports:
-      - "0.0.0.0:0:27017"  # Let Docker assign an available port dynamically
-
+      - postgres
+      - kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
     environment:
-      MONGO_INITDB_ROOT_USERNAME: anomalyze
-      MONGO_INITDB_ROOT_PASSWORD: secretpassword
-      MONGO_INITDB_DATABASE: anomalyze
-    volumes:
-      - mongo_data:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Load initialization script
-
-  mongodb-test:
-    container_name: anomalyze-mongodb-test
-    image: mongo:5.0
-    restart: always
+      ZOOKEEPER_CLIENT_PORT: 2181
     ports:
-      - "27018:27017"  # Map test MongoDB port to 27017 internally
+      - "2181:2181"
+
+  kafka:
+    image: 'confluentinc/cp-kafka:latest'
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: anomalyze
-      MONGO_INITDB_ROOT_PASSWORD: secretpassword
-      MONGO_INITDB_DATABASE: anomalyze_test
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"  # ✅ Ensures topics auto-create if missing
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_USER: anomalyze
+      POSTGRES_PASSWORD: anomalyze_pass
+      POSTGRES_DB: anomalyze_db
+    ports:
+      - "5432:5432"
     volumes:
-      - mongo_test_data:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Ensure test DB gets the user
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  mongo_data:
-  mongo_test_data:
+  pgdata:
