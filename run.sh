@@ -1,3 +1,3 @@
 git add --all
 git commit -m "Added GitHub Actions CI/CD workflow"
-git push origin main
+git push -u origin main
