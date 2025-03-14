@@ -1,14 +1,19 @@
-# Ignore Python cache
+# Ignore Python virtual environment
+venv/
 __pycache__/
 *.pyc
 
-# Ignore Virtual Environment
-venv/
+# Ignore Logs
+logs/
+*.log
+
+# Ignore Environment Variables
 .env
 
-# Ignore VS Code settings
-.vscode/
+# Ignore Data Files
+*.csv
+*.json
 
-# Ignore Docker builds
-*.log
+# Ignore Docker-related files
 *.db
+

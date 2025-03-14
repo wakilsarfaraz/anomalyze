@@ -1,66 +1,13 @@
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from pymongo import MongoClient
-from src.utils.logger import logger  # Ensure logging is applied
-import os
+from fastapi import FastAPI
+from src.database import get_db_connection
 
-print("⚡ DEBUG: routes.py is executing")
+app = FastAPI()
 
-# ✅ Explicitly define `router` at the start
-router = APIRouter()
-
-TEST_MODE = os.getenv("TEST_MODE", "false").lower() == "true"
-
-if TEST_MODE:
-    MONGO_URI = os.getenv("TEST_MONGO_URI", "mongodb://mongodb-test:27018/anomalyze_test")
-else:
-    MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongodb:27017/anomalyze")
-
-client = MongoClient(MONGO_URI)
-db = client["anomalyze_test" if TEST_MODE else "anomalyze"]
-collection = db["ingestion_data"]
-
-# ✅ Define Data Model BEFORE Using It
-class IngestionRequest(BaseModel):
-    source: str
-    timestamp: str
-    data: dict
-
-# ✅ Force print function list before registering routes
-import inspect, sys
-print("⚡ DEBUG: Defined functions before attaching to router:", [func[0] for func in inspect.getmembers(sys.modules[__name__], inspect.isfunction)])
-
-# ✅ FORCE REGISTER `/ingest`
-@router.post("/ingest", tags=["Ingestion"])
-async def ingest_data(request: IngestionRequest):
-    """
-    API endpoint to ingest structured data into MongoDB.
-    """
-    print("⚡ DEBUG: /ingest endpoint was called")  # Debugging print
-    logger.info("⚡ LOG FILE: /ingest endpoint was hit!")  # Logging
+@app.get("/")
+async def root():
     try:
-        logger.info(f"Received data from source: {request.source}")
-        collection.insert_one(request.dict())
-        logger.info("Data successfully stored in MongoDB.")
-        return {"message": "Data ingested successfully."}
+        conn = get_db_connection()
+        conn.close()
+        return {"message": "Connected to PostgreSQL successfully!"}
     except Exception as e:
-        logger.error(f"Error during ingestion: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-
-# ✅ FORCE REGISTER `/test-mongo`
-@router.get("/test-mongo", tags=["Health Check"])
-async def test_mongo():
-    """
-    API endpoint to verify MongoDB connection.
-    """
-    print("⚡ DEBUG: /test-mongo endpoint was called")  # Debugging print
-    try:
-        test_doc = {"test": "connection"}
-        collection.insert_one(test_doc)
-        return {"status": "MongoDB is connected"}
-    except Exception as e:
-        logger.error(f"MongoDB connection failed: {str(e)}")
-        return {"status": "MongoDB connection failed", "error": str(e)}
-
-# ✅ NOW print registered routes AFTER they are attached
-print(f"⚡ DEBUG: Final Routes in `routes.py`: {[route.path for route in router.routes]}")
+        return {"error": str(e)}

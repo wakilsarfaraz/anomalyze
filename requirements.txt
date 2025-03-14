@@ -1,9 +1,4 @@
 fastapi
 uvicorn[standard]
-pydantic-settings
-motor
-python-dotenv
-pytest
-httpx
-pymongo
-
+psycopg2-binary
+kafka-python
