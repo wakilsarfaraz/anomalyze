@@ -3,6 +3,7 @@ from src.database import get_db_connection
 
 app = FastAPI()
 
+
 @app.get("/")
 async def root():
     try:

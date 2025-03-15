@@ -1,5 +1,3 @@
-
-
 from kafka import KafkaProducer
 import json
 import time
@@ -8,8 +6,9 @@ try:
     print("✅ Starting Kafka Producer...")  # Debugging print
 
     producer = KafkaProducer(
-    bootstrap_servers='kafka:9092',  # ✅ Ensure "kafka" (Docker service name) is used, NOT "localhost"
-    value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+        bootstrap_servers='kafka:9092',  # ✅ Ensure "kafka" (Docker service name) is used, NOT "localhost"
+        value_serializer=lambda v: json.dumps(v).encode('utf-8')
+    )
 
     print("✅ Kafka Producer Connected Successfully!")  # Debugging print
 

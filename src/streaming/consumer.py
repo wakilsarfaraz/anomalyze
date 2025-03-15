@@ -1,7 +1,8 @@
 from kafka import KafkaConsumer
 import json
 
-consumer = KafkaConsumer(
+
+consumer = KafkaConsumer(  # ✅ Now correctly spaced
     'anomalyze-topic',
     bootstrap_servers='kafka:9092',
     auto_offset_reset='earliest',
