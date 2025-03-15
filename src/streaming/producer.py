@@ -6,7 +6,7 @@ try:
     print("✅ Starting Kafka Producer...")  # Debugging print
 
     producer = KafkaProducer(
-        bootstrap_servers='kafka:9092',  # ✅ Ensure "kafka" (Docker service name) is used, NOT "localhost"
+        bootstrap_servers='kafka:9092',  
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
 
