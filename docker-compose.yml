@@ -17,6 +17,9 @@ services:
 
   kafka:
     image: 'confluentinc/cp-kafka:latest'
+    command: ["bash", "-c", "/create-topics.sh"]
+    volumes:
+      - ./create-topics.sh:/create-topics.sh
     container_name: kafka
     depends_on:
       - zookeeper
