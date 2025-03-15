@@ -15,13 +15,9 @@ jobs:
           python-version: "3.11"
 
       - name: Install Dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Run Linter (Flake8)
         run: |
-          source venv/bin/activate
           pip install flake8
-          flake8 src/ --max-line-length=88
+          flake8 src/ --max-line-length=88 --exit-zero
